@@ -1,0 +1,155 @@
+INFO:root:Shared memory not found. Waiting...
+INFO:root:Shared memory not found. Waiting...
+INFO:root:Linked to the shm buffer!
+CRITICAL:root:[Local controller] ID=0 is launched!
+CRITICAL:root:Waiting for pre-check done!
+CRITICAL:root:Waiting for pre-check done!
+CRITICAL:root:Waiting for pre-check done!
+CRITICAL:root:Waiting for pre-check done!
+CRITICAL:root:Waiting for pre-check done!
+INFO:root:Rank 0: repeat pattern starts from 0, period = 31, pattern = [193   3   2   6 128   0   1 193   1 193   6   6   6   3   2   6 128   0
+   3   2   6 128   0   1 193   3   2   6 128   0   1]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 755304.6666666666, std=47521.9915711546
+INFO:root:Rank 1: repeat pattern starts from 0, period = 31, pattern = [193   3   2   6 128   0   1 193   1 193   6   6   6   3   2   6 128   0
+   3   2   6 128   0   1 193   3   2   6 128   0   1]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 756450.5, std=47175.9821227921
+INFO:root:Rank 2: repeat pattern starts from 0, period = 23, pattern = [323   0   1   3   2 323   0   6   6   6   1   3   2 323   0   1   3   2
+ 323   0   1   3   2]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 756751.1666666666, std=46085.86204906615
+INFO:root:Rank 3: repeat pattern starts from 0, period = 23, pattern = [323   0   1   3   2 323   0   6   6   6   1   3   2 323   0   1   3   2
+ 323   0   1   3   2]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 756543.6666666666, std=45890.95906118715
+INFO:root:Rank 0: repeat pattern starts from 0, period = 31, pattern = [193   3   2   6 128   0   1 193   1 193   6   6   6   3   2   6 128   0
+   3   2   6 128   0   1 193   3   2   6 128   0   1]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 735487.5833333334, std=6675.258015716612
+INFO:root:Rank 1: repeat pattern starts from 0, period = 31, pattern = [193   3   2   6 128   0   1 193   1 193   6   6   6   3   2   6 128   0
+   3   2   6 128   0   1 193   3   2   6 128   0   1]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 735804.0, std=9156.622940072757
+INFO:root:Rank 2: repeat pattern starts from 0, period = 23, pattern = [323   0   1   3   2 323   0   6   6   6   1   3   2 323   0   1   3   2
+ 323   0   1   3   2]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 736252.8333333334, std=6513.545460977624
+INFO:root:Rank 3: repeat pattern starts from 0, period = 23, pattern = [323   0   1   3   2 323   0   6   6   6   1   3   2 323   0   1   3   2
+ 323   0   1   3   2]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 736123.5, std=6365.558335029746
+INFO:root:Rank 0: repeat pattern starts from 0, period = 31, pattern = [193   3   2   6 128   0   1 193   1 193   6   6   6   3   2   6 128   0
+   3   2   6 128   0   1 193   3   2   6 128   0   1]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 740805.6842105263, std=21311.308063419317
+INFO:root:Rank 1: repeat pattern starts from 0, period = 31, pattern = [193   3   2   6 128   0   1 193   1 193   6   6   6   3   2   6 128   0
+   3   2   6 128   0   1 193   3   2   6 128   0   1]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 741157.4210526316, std=22399.86955158395
+INFO:root:Rank 2: repeat pattern starts from 0, period = 23, pattern = [323   0   1   3   2 323   0   6   6   6   1   3   2 323   0   1   3   2
+ 323   0   1   3   2]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 741281.5263157894, std=22187.689460999052
+INFO:root:Rank 3: repeat pattern starts from 0, period = 23, pattern = [323   0   1   3   2 323   0   6   6   6   1   3   2 323   0   1   3   2
+ 323   0   1   3   2]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 741317.052631579, std=21593.630965180168
+INFO:root:Rank 0: repeat pattern starts from 0, period = 31, pattern = [193   3   2   6 128   0   1 193   1 193   6   6   6   3   2   6 128   0
+   3   2   6 128   0   1 193   3   2   6 128   0   1]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 738756.8076923077, std=18618.696732088403
+INFO:root:Rank 1: repeat pattern starts from 0, period = 31, pattern = [193   3   2   6 128   0   1 193   1 193   6   6   6   3   2   6 128   0
+   3   2   6 128   0   1 193   3   2   6 128   0   1]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 738983.1538461539, std=19542.258305237883
+INFO:root:Rank 2: repeat pattern starts from 0, period = 23, pattern = [323   0   1   3   2 323   0   6   6   6   1   3   2 323   0   1   3   2
+ 323   0   1   3   2]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 739182.2307692308, std=19399.524172014935
+INFO:root:Rank 3: repeat pattern starts from 0, period = 23, pattern = [323   0   1   3   2 323   0   6   6   6   1   3   2 323   0   1   3   2
+ 323   0   1   3   2]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 739103.9615384615, std=18889.342834765055
+INFO:root:Rank 0: repeat pattern starts from 0, period = 31, pattern = [193   3   2   6 128   0   1 193   1 193   6   6   6   3   2   6 128   0
+   3   2   6 128   0   1 193   3   2   6 128   0   1]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 741545.3529411765, std=22099.389722585704
+INFO:root:Rank 1: repeat pattern starts from 0, period = 31, pattern = [193   3   2   6 128   0   1 193   1 193   6   6   6   3   2   6 128   0
+   3   2   6 128   0   1 193   3   2   6 128   0   1]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 741707.8823529412, std=21885.27775867591
+INFO:root:Rank 2: repeat pattern starts from 0, period = 23, pattern = [323   0   1   3   2 323   0   6   6   6   1   3   2 323   0   1   3   2
+ 323   0   1   3   2]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 741919.6176470588, std=22599.872011629657
+INFO:root:Rank 3: repeat pattern starts from 0, period = 23, pattern = [323   0   1   3   2 323   0   6   6   6   1   3   2 323   0   1   3   2
+ 323   0   1   3   2]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 741771.6764705882, std=22426.517103539034
+INFO:root:Rank 0: repeat pattern starts from 0, period = 31, pattern = [193   3   2   6 128   0   1 193   1 193   6   6   6   3   2   6 128   0
+   3   2   6 128   0   1 193   3   2   6 128   0   1]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 736796.9487179487, std=6803.366127442856
+INFO:root:Rank 1: repeat pattern starts from 0, period = 31, pattern = [193   3   2   6 128   0   1 193   1 193   6   6   6   3   2   6 128   0
+   3   2   6 128   0   1 193   3   2   6 128   0   1]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 739145.95, std=15043.529303241974
+INFO:root:Rank 2: repeat pattern starts from 0, period = 23, pattern = [323   0   1   3   2 323   0   6   6   6   1   3   2 323   0   1   3   2
+ 323   0   1   3   2]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 736964.9743589744, std=6850.844029929412
+INFO:root:Rank 3: repeat pattern starts from 0, period = 23, pattern = [323   0   1   3   2 323   0   6   6   6   1   3   2 323   0   1   3   2
+ 323   0   1   3   2]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 736919.3333333334, std=6548.007695957968
+INFO:root:Rank 0: repeat pattern starts from 0, period = 31, pattern = [193   3   2   6 128   0   1 193   1 193   6   6   6   3   2   6 128   0
+   3   2   6 128   0   1 193   3   2   6 128   0   1]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 737305.1739130435, std=7385.398768499522
+INFO:root:Rank 1: repeat pattern starts from 0, period = 31, pattern = [193   3   2   6 128   0   1 193   1 193   6   6   6   3   2   6 128   0
+   3   2   6 128   0   1 193   3   2   6 128   0   1]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 739243.4042553192, std=14407.193832012304
+INFO:root:Rank 2: repeat pattern starts from 0, period = 23, pattern = [323   0   1   3   2 323   0   6   6   6   1   3   2 323   0   1   3   2
+ 323   0   1   3   2]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 737386.804347826, std=7719.919079378682
+INFO:root:Rank 3: repeat pattern starts from 0, period = 23, pattern = [323   0   1   3   2 323   0   6   6   6   1   3   2 323   0   1   3   2
+ 323   0   1   3   2]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 737409.6739130435, std=7423.101520003348
+INFO:root:Rank 0: repeat pattern starts from 0, period = 31, pattern = [193   3   2   6 128   0   1 193   1 193   6   6   6   3   2   6 128   0
+   3   2   6 128   0   1 193   3   2   6 128   0   1]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 737648.1111111111, std=7030.4126417714815
+INFO:root:Rank 1: repeat pattern starts from 0, period = 31, pattern = [193   3   2   6 128   0   1 193   1 193   6   6   6   3   2   6 128   0
+   3   2   6 128   0   1 193   3   2   6 128   0   1]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 737854.2222222222, std=7889.317335783329
+INFO:root:Rank 2: repeat pattern starts from 0, period = 23, pattern = [323   0   1   3   2 323   0   6   6   6   1   3   2 323   0   1   3   2
+ 323   0   1   3   2]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 737732.1296296297, std=7348.637502956778
+INFO:root:Rank 3: repeat pattern starts from 0, period = 23, pattern = [323   0   1   3   2 323   0   6   6   6   1   3   2 323   0   1   3   2
+ 323   0   1   3   2]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 737735.7222222222, std=7054.885397963248
+INFO:root:Rank 0: repeat pattern starts from 0, period = 31, pattern = [193   3   2   6 128   0   1 193   1 193   6   6   6   3   2   6 128   0
+   3   2   6 128   0   1 193   3   2   6 128   0   1]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 738422.655737705, std=8219.97218073001
+INFO:root:Rank 1: repeat pattern starts from 0, period = 31, pattern = [193   3   2   6 128   0   1 193   1 193   6   6   6   3   2   6 128   0
+   3   2   6 128   0   1 193   3   2   6 128   0   1]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 738615.7213114754, std=8972.644167053668
+INFO:root:Rank 2: repeat pattern starts from 0, period = 23, pattern = [323   0   1   3   2 323   0   6   6   6   1   3   2 323   0   1   3   2
+ 323   0   1   3   2]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 738518.737704918, std=8480.847075117506
+INFO:root:Rank 3: repeat pattern starts from 0, period = 23, pattern = [323   0   1   3   2 323   0   6   6   6   1   3   2 323   0   1   3   2
+ 323   0   1   3   2]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 738580.0819672131, std=8410.205081796254
+INFO:root:Rank 0: repeat pattern starts from 0, period = 31, pattern = [193   3   2   6 128   0   1 193   1 193   6   6   6   3   2   6 128   0
+   3   2   6 128   0   1 193   3   2   6 128   0   1]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 739743.1014492754, std=9823.156905924066
+INFO:root:Rank 1: repeat pattern starts from 0, period = 31, pattern = [193   3   2   6 128   0   1 193   1 193   6   6   6   3   2   6 128   0
+   3   2   6 128   0   1 193   3   2   6 128   0   1]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 739933.9710144928, std=10249.216846675376
+INFO:root:Rank 2: repeat pattern starts from 0, period = 23, pattern = [323   0   1   3   2 323   0   6   6   6   1   3   2 323   0   1   3   2
+ 323   0   1   3   2]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 739783.0434782609, std=10038.065958466077
+INFO:root:Rank 3: repeat pattern starts from 0, period = 23, pattern = [323   0   1   3   2 323   0   6   6   6   1   3   2 323   0   1   3   2
+ 323   0   1   3   2]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 739821.231884058, std=9452.426008886616
+INFO:root:Find suspective change point at t=71306196, prob=0.9373334050178528
+INFO:root:Change point 59 is filtered out due to less degradation: 0.020292813132042484 < 0.2
+INFO:root:Rank 0: repeat pattern starts from 0, period = 31, pattern = [193   3   2   6 128   0   1 193   1 193   6   6   6   3   2   6 128   0
+   3   2   6 128   0   1 193   3   2   6 128   0   1]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 739214.9605263158, std=10158.613199801372
+INFO:root:Rank 1: repeat pattern starts from 0, period = 31, pattern = [193   3   2   6 128   0   1 193   1 193   6   6   6   3   2   6 128   0
+   3   2   6 128   0   1 193   3   2   6 128   0   1]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 739392.6315789474, std=10529.373497934375
+INFO:root:Rank 2: repeat pattern starts from 0, period = 23, pattern = [323   0   1   3   2 323   0   6   6   6   1   3   2 323   0   1   3   2
+ 323   0   1   3   2]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 739287.7236842106, std=10320.63481905965
+INFO:root:Rank 3: repeat pattern starts from 0, period = 23, pattern = [323   0   1   3   2 323   0   6   6   6   1   3   2 323   0   1   3   2
+ 323   0   1   3   2]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 739286.1578947369, std=9994.96775363092
+INFO:root:Rank 0: repeat pattern starts from 0, period = 31, pattern = [193   3   2   6 128   0   1 193   1 193   6   6   6   3   2   6 128   0
+   3   2   6 128   0   1 193   3   2   6 128   0   1]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 738843.2857142857, std=9908.888410786296
+INFO:root:Rank 1: repeat pattern starts from 0, period = 31, pattern = [193   3   2   6 128   0   1 193   1 193   6   6   6   3   2   6 128   0
+   3   2   6 128   0   1 193   3   2   6 128   0   1]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 739128.5238095238, std=10203.801823545722
+INFO:root:Rank 2: repeat pattern starts from 0, period = 23, pattern = [323   0   1   3   2 323   0   6   6   6   1   3   2 323   0   1   3   2
+ 323   0   1   3   2]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 739009.1785714285, std=9976.482027582853
+INFO:root:Rank 3: repeat pattern starts from 0, period = 23, pattern = [323   0   1   3   2 323   0   6   6   6   1   3   2 323   0   1   3   2
+ 323   0   1   3   2]
+CRITICAL:root:Estimated iteration time (moving average in buffer) = 738976.9761904762, std=9739.066297986474

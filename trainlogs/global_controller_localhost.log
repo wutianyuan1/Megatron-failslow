@@ -1,0 +1,7 @@
+INFO:root:Computation tasks are dispatched!
+INFO:root:Computation result of rank 0 collected = (Perf: min=65.4049301147461, max=65.50630187988281, avg=65.43261108398437, std=0.03577612919244733)!!
+INFO:root:Computation result of rank 3 collected = (Perf: min=65.55648040771484, max=65.66966247558594, avg=65.58663635253906, std=0.037088868347809174)!!
+INFO:root:Computation result of rank 1 collected = (Perf: min=65.40595245361328, max=65.53923034667969, avg=65.44589767456054, std=0.04180170649190158)!!
+INFO:root:Computation result of rank 2 collected = (Perf: min=65.63737487792969, max=65.72441864013672, avg=65.66234970092773, std=0.030733582376925004)!!
+CRITICAL:root:[GlobalController] Stop server running!
+CRITICAL:root:[GlobalController] Stop server!
