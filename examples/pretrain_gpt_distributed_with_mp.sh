@@ -4,11 +4,11 @@
 
 export CUDA_DEVICE_MAX_CONNECTIONS=1
 export OMP_NUM_THREADS=1
-export LD_PRELOAD=$LD_PRELOAD:/workspace/ncclprobe/build/libncclprobe.so
-export CONTROL_PLANE_WHL_PATH=/workspace/Megatron-LM/trainlogs/control_plane-1.0-py3-none-any.whl
-export NCCLPROBE_LOG_PATH=/workspace/Megatron-LM/trainlogs/
-export GLOBAL_CONTROLLER_LOG_PATH=/workspace/Megatron-LM/trainlogs/
-export LOCAL_CONTROLLER_LOG_PATH=/workspace/Megatron-LM/trainlogs/
+# export LD_PRELOAD=$LD_PRELOAD:/workspace/ncclprobe/build/libncclprobe.so
+# export CONTROL_PLANE_WHL_PATH=/workspace/Megatron-LM/trainlogs/control_plane-1.0-py3-none-any.whl
+# export NCCLPROBE_LOG_PATH=/workspace/Megatron-LM/trainlogs/
+# export GLOBAL_CONTROLLER_LOG_PATH=/workspace/Megatron-LM/trainlogs/
+# export LOCAL_CONTROLLER_LOG_PATH=/workspace/Megatron-LM/trainlogs/
 
 GPUS_PER_NODE=4
 # Change for multinode config
@@ -32,10 +32,10 @@ DISTRIBUTED_ARGS="
 "
 
 GPT_ARGS="
-    --tensor-model-parallel-size 2\
+    --tensor-model-parallel-size 1\
     --pipeline-model-parallel-size 2\
     --sequence-parallel \
-    --num-layers 64 \
+    --num-layers 32 \
     --hidden-size 2048 \
     --num-attention-heads 32 \
     --seq-length 32 \
@@ -50,7 +50,8 @@ GPT_ARGS="
     --weight-decay 1e-2 \
     --lr-warmup-fraction .01 \
     --clip-grad 1.0 \
-    --fp16
+    --fp16 \
+    --mock-data
 "
 
 DATA_ARGS="
@@ -61,7 +62,7 @@ DATA_ARGS="
 "
 
 OUTPUT_ARGS="
-    --log-interval 10 \
+    --log-interval 1 \
     --save-interval 10000 \
     --eval-interval 1000 \
     --eval-iters 10

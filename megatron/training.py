@@ -538,6 +538,7 @@ def train_step(forward_step_func, data_iterator,
     optimizer.zero_grad()
 
     # Forward pass.
+    print(f"forward: rank={torch.distributed.get_rank()}, globalbsz={args.global_batch_size}, microbsz={args.micro_batch_size}, num_microbatchs:{get_num_microbatches()}, dp:{args.data_parallel_size}")
     forward_backward_func = get_forward_backward_func()
     losses_reduced = forward_backward_func(
         forward_step_func=forward_step_func,

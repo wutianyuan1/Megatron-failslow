@@ -444,17 +444,18 @@ def validate_args(args, defaults={}):
 
 def _print_args(title, args):
     """Print arguments."""
-    if args.rank == 0:
-        print(f'------------------------ {title} ------------------------',
-              flush=True)
-        str_list = []
-        for arg in vars(args):
-            dots = '.' * (48 - len(arg))
-            str_list.append('  {} {} {}'.format(arg, dots, getattr(args, arg)))
-        for arg in sorted(str_list, key=lambda x: x.lower()):
-            print(arg, flush=True)
-        print(f'-------------------- end of {title} ---------------------',
-              flush=True)
+    pass
+    # if args.rank == 0:
+    #     print(f'------------------------ {title} ------------------------',
+    #           flush=True)
+    #     str_list = []
+    #     for arg in vars(args):
+    #         dots = '.' * (48 - len(arg))
+    #         str_list.append('  {} {} {}'.format(arg, dots, getattr(args, arg)))
+    #     for arg in sorted(str_list, key=lambda x: x.lower()):
+    #         print(arg, flush=True)
+    #     print(f'-------------------- end of {title} ---------------------',
+    #           flush=True)
 
 
 def _check_arg_is_not_none(args, arg):
