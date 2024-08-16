@@ -4,19 +4,28 @@
 
 from abc import ABC
 from abc import abstractmethod
+import torch.distributed
+from megatron.core import mpu
+from megatron.variation_aware.batch_distribution import init_batch_distribution, set_initial_micro_batch_num, get_my_micro_batch_num
 
+_CHECK_INTERVAL = 20
 
 def build_num_microbatches_calculator(args):
-
     # Constant num micro-batches.
     if args.rampup_batch_size is None:
-        num_microbatches_calculator = ConstantNumMicroBatches(
-            args.global_batch_size, args.micro_batch_size,
-            args.data_parallel_size)
-        if args.rank == 0:
-            print('setting number of micro-batches to constant {}'.format(
-                num_microbatches_calculator.get()), flush=True)
-
+        if args.failslow_aware:
+            num_microbatches_calculator = FailslowAwareMicroBatches(
+                args.global_batch_size, args.micro_batch_size,
+                args.data_parallel_size)
+            if args.rank == 0:
+                print('failslow-aware microbatches')
+        else:
+            num_microbatches_calculator = ConstantNumMicroBatches(
+                args.global_batch_size, args.micro_batch_size,
+                args.data_parallel_size)
+            if args.rank == 0:
+                print('setting number of micro-batches to constant {}'.format(
+                    num_microbatches_calculator.get()), flush=True)
     else:
         assert len(args.rampup_batch_size) == 3, 'expected the following ' \
             'format: --rampup-batch-size <start batch size> ' \
@@ -73,6 +82,39 @@ class ConstantNumMicroBatches(NumMicroBatchesCalculator):
 
     def update(self, consumed_samples, consistency_check):
         pass
+
+
+class FailslowAwareMicroBatches(ConstantNumMicroBatches):
+
+    def __init__(self, global_batch_size, micro_batch_size, data_parallel_size):
+        super().__init__(global_batch_size, micro_batch_size, data_parallel_size)
+        micro_batch_times_data_parallel = micro_batch_size * data_parallel_size
+        self.num_micro_batches = global_batch_size // micro_batch_times_data_parallel
+        self.inited = False
+        self.iter_count = 0
+        self.get_check = True
+
+    def get(self):
+        if not self.inited:
+            init_batch_distribution()
+            set_initial_micro_batch_num(mpu.get_data_parallel_rank(), self.num_micro_batches)
+            self.inited = True
+        if self.iter_count % 20 == 0 and self.get_check:
+            tmp_mb_num = get_my_micro_batch_num()
+            # Add an all-reduce here to sync micro-batch updates
+            # torch.distributed.all_reduce(torch.tensor([1], device=torch.cuda.current_device()))
+            if tmp_mb_num != self.num_micro_batches:
+                print(f"$$$$$-rank {torch.distributed.get_rank()} Changed (iter={self.iter_count})!!!")
+                self.num_micro_batches = tmp_mb_num
+            else:
+                print(f"$$$$$-rank {torch.distributed.get_rank()} NO change (iter={self.iter_count})")
+            self.get_check = False
+        return self.num_micro_batches
+
+    def update(self, consumed_samples, consistency_check):
+        if consistency_check:
+            self.get_check = True
+            self.iter_count += 1
 
 
 class RampupBatchsizeNumMicroBatches(NumMicroBatchesCalculator):

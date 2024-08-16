@@ -5,6 +5,7 @@
 import sys
 
 import torch
+import torch.distributed
 
 try:
     from apex.multi_tensor_apply import multi_tensor_applier
@@ -25,6 +26,7 @@ from megatron.core import mpu
 from megatron.core.tensor_parallel import param_is_not_tensor_parallel_duplicate
 from megatron.model import Float16Module
 from megatron.model.module import param_is_not_shared
+from megatron.variation_aware.batch_distribution import get_loss_and_grad_weight
 
 
 ALL_MODULE_WRAPPER_CLASSNAMES = (DDP, Float16Module)
@@ -97,11 +99,11 @@ def average_losses_across_data_parallel_group(losses):
     """Reduce a tensor of losses across all GPUs."""
     averaged_losses = torch.cat(
         [loss.clone().detach().view(1) for loss in losses])
-    torch.distributed.all_reduce(averaged_losses,
-                                 group=mpu.get_data_parallel_group())
-    averaged_losses = averaged_losses / \
-        torch.distributed.get_world_size(group=mpu.get_data_parallel_group())
-
+    # torch.distributed.all_reduce(averaged_losses,
+    #                              group=mpu.get_data_parallel_group())
+    # averaged_losses = averaged_losses / \
+    #     torch.distributed.get_world_size(group=mpu.get_data_parallel_group())
+    # averaged_losses *= get_loss_and_grad_weight()
     return averaged_losses
 
 

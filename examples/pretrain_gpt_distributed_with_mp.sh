@@ -41,7 +41,7 @@ GPT_ARGS="
     --seq-length 32 \
     --max-position-embeddings 1024 \
     --micro-batch-size 4 \
-    --global-batch-size 16 \
+    --global-batch-size 32 \
     --lr 0.00015 \
     --train-iters 500000 \
     --lr-decay-iters 320000 \
@@ -52,6 +52,7 @@ GPT_ARGS="
     --clip-grad 1.0 \
     --fp16 \
     --mock-data
+    --failslow-aware
 "
 
 DATA_ARGS="
