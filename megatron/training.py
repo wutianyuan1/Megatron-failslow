@@ -9,6 +9,7 @@ import math
 import logging
 import os
 import sys
+import redis
 import torch.distributed as dist
 from .log_handler import CustomHandler
 # Make default logging level INFO, but filter out all log messages not from MCore.
@@ -958,6 +959,13 @@ def train(forward_step_func, model, optimizer, opt_param_scheduler,
                 'train_iterations_time_msecs_avg': train_iterations_time_msecs_avg,
                 'validation_iterations_time_msecs_avg': validation_iterations_time_msecs_avg
             })
+
+    # Madoka: log global and micro batchsize before training iterations
+    redis_ip = os.getenv('MASTER_ADDR', 'localhost')
+    redis_port = os.getenv('REDIS_PORT', '6379')
+    redis_client = redis.StrictRedis(redis_ip, redis_port, db=0)
+    redis_client.set("global_batch_size", args.global_batch_size)
+    redis_client.set("micro_batch_size", args.micro_batch_size)
 
     while iteration < args.train_iters:
         if args.profile and \
