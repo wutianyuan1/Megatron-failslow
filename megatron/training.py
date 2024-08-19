@@ -962,7 +962,7 @@ def train(forward_step_func, model, optimizer, opt_param_scheduler,
 
     # Madoka: log global and micro batchsize before training iterations
     redis_ip = os.getenv('MASTER_ADDR', 'localhost')
-    redis_port = os.getenv('REDIS_PORT', '6379')
+    redis_port = int(os.getenv('REDIS_PORT', '6379'))
     redis_client = redis.StrictRedis(redis_ip, redis_port, db=0)
     redis_client.set("global_batch_size", args.global_batch_size)
     redis_client.set("micro_batch_size", args.micro_batch_size)

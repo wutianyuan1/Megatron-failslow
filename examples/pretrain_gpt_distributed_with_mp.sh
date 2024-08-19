@@ -4,11 +4,11 @@
 
 export CUDA_DEVICE_MAX_CONNECTIONS=1
 export OMP_NUM_THREADS=1
-# export LD_PRELOAD=$LD_PRELOAD:/workspace/ncclprobe/build/libncclprobe.so
-# export CONTROL_PLANE_WHL_PATH=/workspace/Megatron-LM/trainlogs/control_plane-1.0-py3-none-any.whl
-# export NCCLPROBE_LOG_PATH=/workspace/Megatron-LM/trainlogs/
-# export GLOBAL_CONTROLLER_LOG_PATH=/workspace/Megatron-LM/trainlogs/
-# export LOCAL_CONTROLLER_LOG_PATH=/workspace/Megatron-LM/trainlogs/
+export LD_PRELOAD=$LD_PRELOAD:/workspace/ncclprobe/build/libncclprobe.so
+export CONTROL_PLANE_WHL_PATH=/workspace/ncclprobe/dist/control_plane-1.0-py3-none-any.whl
+export NCCLPROBE_LOG_PATH=/workspace/trainlogs/
+export GLOBAL_CONTROLLER_LOG_PATH=/workspace/trainlogs/
+export LOCAL_CONTROLLER_LOG_PATH=/workspace/trainlogs/
 
 GPUS_PER_NODE=4
 # Change for multinode config

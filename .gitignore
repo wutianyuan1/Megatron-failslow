@@ -7,3 +7,6 @@ build
 slurm*
 logs
 .vscode
+*.txt
+*.log
+*.whl
