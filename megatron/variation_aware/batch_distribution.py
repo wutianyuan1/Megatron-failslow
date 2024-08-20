@@ -1,4 +1,5 @@
 import torch
+import os
 import torch.distributed
 import redis
 
@@ -21,7 +22,11 @@ def sync_global_batch_distribution():
 def init_batch_distribution():
     global REDIS_CLIENT
     if REDIS_CLIENT is None:
-        REDIS_CLIENT = redis.StrictRedis(host='localhost', port=6379, db=0)
+        REDIS_CLIENT = redis.StrictRedis(
+            host=os.getenv("MASTER_ADDR", 'localhost'),
+            port=int(os.getenv("REDIS_PORT", '6379')),
+            db=0
+        )
     REDIS_CLIENT.set("dp_version", 0)
     sync_global_batch_distribution()
 

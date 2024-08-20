@@ -5,8 +5,11 @@ from contextlib import nullcontext
 import os
 import math
 import numpy as np
+import redis.exceptions
 import torch
+import logging
 import torch.nn.functional as F
+import redis
 from typing import Optional
 
 from megatron import get_timers, get_args, get_retro_args, core, get_num_microbatches
@@ -1561,6 +1564,24 @@ class ParallelTransformer(MegatronModule):
                     offset = (pipeline_rank - num_ranks_in_enc) * self.num_layers
             else:
                 offset = mpu.get_pipeline_model_parallel_rank() * self.num_layers
+
+        ### Madoka: change number of layers and offset
+        pp_rank = mpu.get_pipeline_model_parallel_rank()
+        client = redis.StrictRedis(
+            os.getenv("MASTER_ADDR", 'localhost'),
+            int(os.getenv("REDIS_PORT", '6379'))
+        )
+        try:
+            tmp_offset = int(client.get(f"pp_offset_{pp_rank}").decode())
+            tmp_num_layers = int(client.get(f"pp_num_layers_{pp_rank}").decode())
+            self.num_layers = tmp_num_layers
+            offset = tmp_offset
+        except redis.exceptions.ConnectionError:
+            logging.warning("[Transformer] Init: Cannot connect to redis")
+        except AttributeError:
+            logging.warning("[Transformer] Init: No num layers and offset found in redis")
+        logging.critical(f"[Transformer] Init: pp_rank={pp_rank}, num_layers={self.num_layers}, offset={offset}")
+        ### Modification ends here
 
         if self.num_layers == 0:
             # When a standalone embedding stage is used (e.g.,

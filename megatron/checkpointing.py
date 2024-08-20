@@ -260,11 +260,11 @@ def get_rng_state(use_dist_ckpt: bool = False):
 
 def save_checkpoint(iteration, model, optimizer, opt_param_scheduler,
                     num_floating_point_operations_so_far):
-    """Madoka: no checkpoints!! to save space!!"""
+    """Madoka: add checkpoint back"""
     # Wait so everyone is done (not necessary)
     if torch.distributed.is_initialized():
         torch.distributed.barrier()
-    return
+
     """Save a model checkpoint."""
     args = get_args()
 

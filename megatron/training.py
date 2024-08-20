@@ -15,6 +15,7 @@ from .log_handler import CustomHandler
 # Make default logging level INFO, but filter out all log messages not from MCore.
 logging.basicConfig(handlers=[CustomHandler()], level=logging.INFO)
 from .theoretical_memory_usage import report_theoretical_memory
+from .microbatches import _CHECK_INTERVAL
 import time
 # The earliest we can measure the start time.
 _TRAIN_START_TIME = time.time()
@@ -964,6 +965,9 @@ def train(forward_step_func, model, optimizer, opt_param_scheduler,
     redis_ip = os.getenv('MASTER_ADDR', 'localhost')
     redis_port = int(os.getenv('REDIS_PORT', '6379'))
     redis_client = redis.StrictRedis(redis_ip, redis_port, db=0)
+    # overwrite the last "terminate" signal to avoid suicide :)
+    redis_client.set("terminate", '0')
+    redis_client.set("total_num_layers", args.num_layers)
     redis_client.set("global_batch_size", args.global_batch_size)
     redis_client.set("micro_batch_size", args.micro_batch_size)
 
@@ -1054,6 +1058,18 @@ def train(forward_step_func, model, optimizer, opt_param_scheduler,
         if args.exit_signal_handler:
             signal_handler = get_signal_handler()
             if any(signal_handler.signals_received()):
+                save_checkpoint_and_time(iteration, model, optimizer,
+                                         opt_param_scheduler,
+                                         num_floating_point_operations_so_far)
+                print_datetime('exiting program after receiving SIGTERM.')
+                exit = True
+                break
+
+        control_term_signal = redis_client.get("terminate")
+        if control_term_signal is not None:
+            control_term_signal = control_term_signal.decode()
+            if control_term_signal == '1':
+                logging.critical("[Training stops] receives terminate signal from redis, exit now...")
                 save_checkpoint_and_time(iteration, model, optimizer,
                                          opt_param_scheduler,
                                          num_floating_point_operations_so_far)
