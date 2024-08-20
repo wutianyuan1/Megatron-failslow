@@ -5,6 +5,7 @@
 from abc import ABC
 from abc import abstractmethod
 import torch.distributed
+import logging
 from megatron.core import mpu
 from megatron.variation_aware.batch_distribution import init_batch_distribution, set_initial_micro_batch_num, get_my_micro_batch_num
 
@@ -102,10 +103,10 @@ class FailslowAwareMicroBatches(ConstantNumMicroBatches):
             # Add an all-reduce here to sync micro-batch updates
             # torch.distributed.all_reduce(torch.tensor([1], device=torch.cuda.current_device()))
             if tmp_mb_num != self.num_micro_batches:
-                print(f"[MicrobatchCalculator] rank {torch.distributed.get_rank()} DP Changed (iter={self.iter_count})")
+                logging.info(f"[MicrobatchCalculator] rank {torch.distributed.get_rank()} DP Changed (iter={self.iter_count})")
                 self.num_micro_batches = tmp_mb_num
             else:
-                print(f"[MicrobatchCalculator] rank {torch.distributed.get_rank()} DP NO change (iter={self.iter_count})")
+                logging.info(f"[MicrobatchCalculator] rank {torch.distributed.get_rank()} DP NO change (iter={self.iter_count})")
             self.get_check = False
         return self.num_micro_batches
 
