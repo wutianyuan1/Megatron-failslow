@@ -88,8 +88,6 @@ class FailslowAwareMicroBatches(ConstantNumMicroBatches):
 
     def __init__(self, global_batch_size, micro_batch_size, data_parallel_size):
         super().__init__(global_batch_size, micro_batch_size, data_parallel_size)
-        micro_batch_times_data_parallel = micro_batch_size * data_parallel_size
-        self.num_micro_batches = global_batch_size // micro_batch_times_data_parallel
         self.inited = False
         self.iter_count = 0
         self.get_check = True
@@ -99,15 +97,15 @@ class FailslowAwareMicroBatches(ConstantNumMicroBatches):
             init_batch_distribution()
             set_initial_micro_batch_num(mpu.get_data_parallel_rank(), self.num_micro_batches)
             self.inited = True
-        if self.iter_count % 20 == 0 and self.get_check:
+        if self.iter_count % _CHECK_INTERVAL == 0 and self.get_check:
             tmp_mb_num = get_my_micro_batch_num()
             # Add an all-reduce here to sync micro-batch updates
             # torch.distributed.all_reduce(torch.tensor([1], device=torch.cuda.current_device()))
             if tmp_mb_num != self.num_micro_batches:
-                print(f"$$$$$-rank {torch.distributed.get_rank()} Changed (iter={self.iter_count})!!!")
+                print(f"[MicrobatchCalculator] rank {torch.distributed.get_rank()} DP Changed (iter={self.iter_count})")
                 self.num_micro_batches = tmp_mb_num
             else:
-                print(f"$$$$$-rank {torch.distributed.get_rank()} NO change (iter={self.iter_count})")
+                print(f"[MicrobatchCalculator] rank {torch.distributed.get_rank()} DP NO change (iter={self.iter_count})")
             self.get_check = False
         return self.num_micro_batches
 
