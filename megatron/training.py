@@ -855,15 +855,17 @@ def compute_throughputs_and_append_to_progress_log(iteration,
 
 
 def save_checkpoint_and_time(iteration, model, optimizer, opt_param_scheduler,
-                             num_floating_point_operations_so_far):
+                             num_floating_point_operations_so_far, to_mem=False):
     args = get_args()
     timers = get_timers()
     # Extra barrier is added to make sure all ranks report the max time.
     timers('save-checkpoint', log_level=0).start(barrier=True)
     save_checkpoint(iteration, model, optimizer, opt_param_scheduler,
-                    num_floating_point_operations_so_far)
+                    num_floating_point_operations_so_far, to_mem)
     timers('save-checkpoint').stop(barrier=True)
     timers.log(['save-checkpoint'])
+    if to_mem:
+        return
 
     if args.log_progress:
         compute_throughputs_and_append_to_progress_log(iteration,
@@ -984,11 +986,12 @@ def train(forward_step_func, model, optimizer, opt_param_scheduler,
         # to make sure training configuration is still valid.
         update_num_microbatches(args.consumed_train_samples, consistency_check=False)
         if get_num_microbatches() != num_microbatches and iteration != 0:
+            pass
             # assert get_num_microbatches() > num_microbatches, \
             #     "number of microbatches should be increasing due to batch size rampup"
-            save_checkpoint_and_time(iteration, model, optimizer,
-                                     opt_param_scheduler,
-                                     num_floating_point_operations_so_far)
+            # save_checkpoint_and_time(iteration, model, optimizer,
+            #                          opt_param_scheduler,
+            #                          num_floating_point_operations_so_far)
         num_microbatches = get_num_microbatches()
         update_num_microbatches(args.consumed_train_samples, consistency_check=True)
 
@@ -1069,12 +1072,14 @@ def train(forward_step_func, model, optimizer, opt_param_scheduler,
         if control_term_signal is not None:
             control_term_signal = control_term_signal.decode()
             if control_term_signal == '1':
-                logging.critical("[Training stops] receives terminate signal from redis, exit now...")
+                logging.critical("[Training paused] receives terminate signal from redis, pause & restart now...")
                 save_checkpoint_and_time(iteration, model, optimizer,
                                          opt_param_scheduler,
-                                         num_floating_point_operations_so_far)
-                print_datetime('exiting program after receiving SIGTERM.')
+                                         num_floating_point_operations_so_far,
+                                         to_mem=True)
+                print_datetime('exiting program after receiving Redis-Pause.')
                 exit = True
+                sys.exit()
                 break
 
         if args.save and args.save_interval and \

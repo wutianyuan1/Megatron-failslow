@@ -5,6 +5,7 @@
 import os
 import random
 import sys
+import collections
 import numpy as np
 
 import torch
@@ -258,8 +259,19 @@ def get_rng_state(use_dist_ckpt: bool = False):
     return rng_state_list
 
 
+def flatten_dict(d, parentkey='', sep='_'):
+    items = []
+    for k, v in d.items():
+        newkey = parentkey + sep + k if parentkey else k
+        if isinstance(v, dict):
+            items.extend(flatten_dict(v, newkey, sep=sep).items())
+        else:
+            items.append((newkey, v))
+    return dict(items)
+
+
 def save_checkpoint(iteration, model, optimizer, opt_param_scheduler,
-                    num_floating_point_operations_so_far):
+                    num_floating_point_operations_so_far, to_mem=False):
     """Madoka: add checkpoint back"""
     # Wait so everyone is done (not necessary)
     if torch.distributed.is_initialized():
@@ -297,6 +309,15 @@ def save_checkpoint(iteration, model, optimizer, opt_param_scheduler,
                                          args.use_dist_ckpt, iteration)
 
         state_dict['num_floating_point_operations_so_far'] = num_floating_point_operations_so_far
+
+        if to_mem:
+            flatten_params = flatten_dict(state_dict)
+            for (k, v) in flatten_params.items():
+                if isinstance(v, torch.Tensor) and not v.is_cpu:
+                    x = v.to('cpu')
+                    # print(x[0])
+            return
+
         if args.use_dist_ckpt:
             if not torch.distributed.is_initialized() or torch.distributed.get_rank() == 0:
                 ensure_directory_exists(checkpoint_name,
@@ -307,6 +328,9 @@ def save_checkpoint(iteration, model, optimizer, opt_param_scheduler,
             # Save.
             ensure_directory_exists(checkpoint_name)
             torch.save(state_dict, checkpoint_name)
+
+    if to_mem:
+        return
 
     # Wait so everyone is done (necessary)
     if torch.distributed.is_initialized():
