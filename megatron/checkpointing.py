@@ -262,7 +262,7 @@ def get_rng_state(use_dist_ckpt: bool = False):
 def flatten_dict(d, parentkey='', sep='_'):
     items = []
     for k, v in d.items():
-        newkey = parentkey + sep + k if parentkey else k
+        newkey = parentkey + sep + str(k) if parentkey else str(k)
         if isinstance(v, dict):
             items.extend(flatten_dict(v, newkey, sep=sep).items())
         else:

@@ -10,13 +10,27 @@ from math import sqrt, floor
 from train_config import DistributedConfig, TrainConfig, DatasetConfig, ModelConfig
 
 
+def clean_all_redis_keys(redis_cli: redis.StrictRedis, preserves):
+    to_dels = []
+    for key in redis_cli.scan_iter("*"):
+        key = key.decode()
+        pattern_match = False
+        for pattern in preserves:
+            if pattern in key:
+                pattern_match = True
+        if not pattern_match:
+            to_dels.append(key)
+    redis_cli.delete(*to_dels)
+    print([i for i in redis_cli.scan_iter("*")])
+
+
 def run_and_log_megatron(megatron_cmd_args, log_file_path, log_file_dir, distributed_config):
     # Start the subprocess
     print(megatron_cmd_args)
     my_env = os.environ
     my_env['CUDA_DEVICE_MAX_CONNECTIONS'] = '1'
     my_env['OMP_NUM_THREADS'] = '1'
-    # my_env['LD_PRELOAD'] = '/workspace/ncclprobe/build/libncclprobe.so'
+    my_env['LD_PRELOAD'] = '/workspace/ncclprobe/build/libncclprobe.so'
     my_env['CONTROL_PLANE_WHL_PATH'] = '/workspace/ncclprobe/dist/control_plane-1.0-py3-none-any.whl'
     my_env['NCCLPROBE_LOG_PATH'] = log_file_dir
     my_env['GLOBAL_CONTROLLER_LOG_PATH'] = log_file_dir
@@ -37,6 +51,7 @@ def run_and_log_megatron(megatron_cmd_args, log_file_path, log_file_dir, distrib
                     redis_cli.set("terminate", 1)
                     process.wait()
                     print("!!!! restart")
+                    clean_all_redis_keys(redis_cli, ['pp_offset', 'pp_num_layers'])
                     process = subprocess.Popen(megatron_cmd_args, stdout=log_file_handle, stderr=log_file_handle, text=True)
                     redis_cli.set("terminate_ctl", "None")
         except KeyboardInterrupt:
