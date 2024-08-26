@@ -24,13 +24,14 @@ def clean_all_redis_keys(redis_cli: redis.StrictRedis, preserves):
     print([i for i in redis_cli.scan_iter("*")])
 
 
-def run_and_log_megatron(megatron_cmd_args, log_file_path, log_file_dir, distributed_config):
+def run_and_log_megatron(megatron_cmd_args, log_file_path, log_file_dir, distributed_config, probe):
     # Start the subprocess
     print(megatron_cmd_args)
     my_env = os.environ
     my_env['CUDA_DEVICE_MAX_CONNECTIONS'] = '1'
     my_env['OMP_NUM_THREADS'] = '1'
-    my_env['LD_PRELOAD'] = '/workspace/ncclprobe/build/libncclprobe.so'
+    if probe != 0:
+        my_env['LD_PRELOAD'] = '/workspace/ncclprobe/build/libncclprobe.so'
     my_env['CONTROL_PLANE_WHL_PATH'] = '/workspace/ncclprobe/dist/control_plane-1.0-py3-none-any.whl'
     my_env['NCCLPROBE_LOG_PATH'] = log_file_dir
     my_env['GLOBAL_CONTROLLER_LOG_PATH'] = log_file_dir
@@ -54,6 +55,12 @@ def run_and_log_megatron(megatron_cmd_args, log_file_path, log_file_dir, distrib
                     clean_all_redis_keys(redis_cli, ['pp_offset', 'pp_num_layers'])
                     process = subprocess.Popen(megatron_cmd_args, stdout=log_file_handle, stderr=log_file_handle, text=True)
                     redis_cli.set("terminate_ctl", "None")
+            fin = redis_cli.get("finished")
+            if fin is not None:
+                process.terminate()
+                log_file_handle.write("Training terminated\n")
+                log_file_handle.flush()
+                break
         except KeyboardInterrupt:
             process.terminate()
             log_file_handle.write("Training terminated\n")
@@ -63,8 +70,12 @@ def run_and_log_megatron(megatron_cmd_args, log_file_path, log_file_dir, distrib
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--logdir', type=str, default='/workspace/trainlog')
+    parser.add_argument('--logdir', type=str, default='/workspace/Megatron-LM/trainlog')
     parser.add_argument('--iter', type=int, default=10000)
+    parser.add_argument('--tp', type=int, default=2)
+    parser.add_argument('--pp', type=int, default=2)
+    parser.add_argument('--probe', type=int, default=0)
+    parser.add_argument('--hsize', type=int, default=2048)
     # parser.add_argument('--nnodes', type=int, default=1)
     # parser.add_argument('--rank', type=int, default=0)
     # parser.add_argument('--master', type=str, default='localhost')
@@ -75,9 +86,9 @@ def main():
     os.chdir('/workspace/Megatron-LM/')
     args = get_args()
     log_file_dir, iter_1000 = args.logdir, args.iter
-    master = os.getenv("MASTER_ADDR")
-    nnodes = int(os.getenv("WORLD_SIZE"))
-    rank = int(os.getenv("RANK"))
+    master = os.getenv("MASTER_ADDR", 'localhost')
+    nnodes = int(os.getenv("WORLD_SIZE", '1'))
+    rank = int(os.getenv("RANK", '0'))
 
     # start redis
     redis_cmd = ["redis-server", "--save", "\"\"", "--appendonly", "no", "--bind", f"{master}"]
@@ -108,21 +119,22 @@ def main():
         os.mkdir(log_file_dir)
     log_file_path = log_file_dir + f"/megatron_output_{rank}.log"
 
-    tp = {1:1, 2:2, 4:2, 8:4}
-    pp = {1:1, 2:1, 4:2, 8:2}
+    tp = args.tp
+    pp = args.pp
 
     num_gpus = torch.cuda.device_count()
     gpu_properties = torch.cuda.get_device_properties("cuda:0")
     gpu_memory = gpu_properties.total_memory / (1024**3)  # GB
     total_gmem = gpu_memory * num_gpus
     # Find a proper hidden size to fulfill the GPU memory
-    hsize = 2048  #int(1024 * (floor(sqrt(total_gmem / 18) * 2) / 2))
+    hsize = args.hsize  #int(1024 * (floor(sqrt(total_gmem / 18) * 2) / 2))
     hostname = socket.gethostname()
     ipaddr = socket.gethostbyname(hostname)
 
     info_str = f"***** log={log_file_path}, master={master}, nnodes={nnodes}, rank={rank},\
                 num_gpus={num_gpus}, gpu_type={gpu_properties.name} gpu_memory={gpu_memory},\
-                total_gmem={total_gmem}, hidden_size={hsize}, [My IP={ipaddr} Master IP={master}]\n"
+                total_gmem={total_gmem}, hidden_size={hsize}, tp={tp}, pp={pp}, probe={args.probe},\
+                [My IP={ipaddr} Master IP={master}]\n"
     
     print(info_str)
 
@@ -130,7 +142,7 @@ def main():
         nproc_per_node=num_gpus, nnodes=nnodes, node_rank=rank, master_addr=master, master_port=6000
     )
     model_config = ModelConfig(
-        tensor_model_parallel_size=1, pipeline_model_parallel_size=2, num_layers=32, #64,
+        tensor_model_parallel_size=tp, pipeline_model_parallel_size=pp, num_layers=32, #64,
         hidden_size=hsize, num_attention_heads=32, seq_length=32, max_position_embeddings=1024, micro_batch_size=4,
         global_batch_size=64, lr=0.00015, train_iters=int(iter_1000), lr_decay_iters=int(0.64*iter_1000), lr_decay_style='cosine',
         min_lr=1.0e-5, weight_decay=0.01, lr_warmup_fraction='.01', clip_grad=1.0, fp16=True, failslow_aware=True
@@ -156,7 +168,7 @@ def main():
         log_file.write(redis_logstr)
         log_file.flush()
     
-    run_and_log_megatron(run_args, log_file_path, log_file_dir, distributed_config)
+    run_and_log_megatron(run_args, log_file_path, log_file_dir, distributed_config, args.probe)
 
     if redis_proc:
         redis_proc.terminate()

@@ -770,8 +770,8 @@ def training_log(loss_dict, total_loss_dict, learning_rate, iteration,
             if wandb_writer:
                 wandb_writer.log({'iteration-time': elapsed_time_per_iteration},
                                  iteration)
-        log_string = ' iteration {:8d}/{:8d} |'.format(
-            iteration, args.train_iters)
+        log_string = '{} iteration {:8d}/{:8d} |'.format(
+            datetime.now(), iteration, args.train_iters)
         log_string += ' consumed samples: {:12d} |'.format(
             args.consumed_train_samples)
         log_string += ' elapsed time per iteration (ms): {:.1f} |'.format(
@@ -1142,6 +1142,8 @@ def train(forward_step_func, model, optimizer, opt_param_scheduler,
     # Close out pre-hooks if using distributed optimizer and overlapped param gather.
     if args.use_distributed_optimizer and args.overlap_param_gather:
         optimizer.disable_pre_hook()
+    
+    redis_client.set("finished", 1)
 
     # If any exit conditions (signal handler, duration, iterations) have been reached, exit.
     if exit:
