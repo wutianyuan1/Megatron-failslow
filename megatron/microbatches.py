@@ -9,7 +9,7 @@ import logging
 from megatron.core import mpu
 from megatron.variation_aware.batch_distribution import init_batch_distribution, set_initial_micro_batch_num, get_my_micro_batch_num
 
-_CHECK_INTERVAL = 20
+_CHECK_INTERVAL = 2
 
 def build_num_microbatches_calculator(args):
     # Constant num micro-batches.
