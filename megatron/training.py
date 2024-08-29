@@ -604,7 +604,7 @@ def train_step(forward_step_func, data_iterator,
 
 def training_log(loss_dict, total_loss_dict, learning_rate, iteration,
                  loss_scale, report_memory_flag, skipped_iter,
-                 grad_norm, params_norm, num_zeros_in_grad):
+                 grad_norm, params_norm, num_zeros_in_grad, min_iter_time, redis_cli):
     """Log training information such as losses, timing, ...."""
     args = get_args()
     timers = get_timers()
@@ -776,6 +776,10 @@ def training_log(loss_dict, total_loss_dict, learning_rate, iteration,
             args.consumed_train_samples)
         log_string += ' elapsed time per iteration (ms): {:.1f} |'.format(
             elapsed_time_per_iteration * 1000.0)
+        redis_cli.set("cur_iter_time", elapsed_time_per_iteration * 1000.0)
+        if elapsed_time_per_iteration * 1000.0 < min_iter_time:
+            redis_cli.set("min_iter_time", elapsed_time_per_iteration * 1000.0)
+
         if args.log_throughput:
             log_string += f' throughput per GPU (TFLOP/s/GPU): {throughput:.1f} |'
             if args.log_timers_to_tensorboard:
@@ -817,7 +821,7 @@ def training_log(loss_dict, total_loss_dict, learning_rate, iteration,
             report_memory_flag = False
         timers.log(timers_to_log, normalizer=args.log_interval)
 
-    return report_memory_flag
+    return report_memory_flag, elapsed_time_per_iteration * 1000.0
 
 
 def compute_throughputs_and_append_to_progress_log(iteration,
@@ -973,6 +977,8 @@ def train(forward_step_func, model, optimizer, opt_param_scheduler,
     redis_client.set("global_batch_size", args.global_batch_size)
     redis_client.set("micro_batch_size", args.micro_batch_size)
 
+    min_iter_time = float("inf")
+
     while iteration < args.train_iters:
         if args.profile and \
            iteration == args.profile_step_start and \
@@ -1019,11 +1025,14 @@ def train(forward_step_func, model, optimizer, opt_param_scheduler,
         if iteration % args.log_interval == 0:
             track_e2e_metrics()
 
-        report_memory_flag = training_log(loss_dict, total_loss_dict,
+        report_memory_flag, cur_iter_time = training_log(loss_dict, total_loss_dict,
                                           optimizer.param_groups[0]['lr'],
                                           iteration, loss_scale,
                                           report_memory_flag, skipped_iter,
-                                          grad_norm, params_norm, num_zeros_in_grad)
+                                          grad_norm, params_norm, num_zeros_in_grad,
+                                          min_iter_time, redis_client)
+        if cur_iter_time < min_iter_time:
+            min_iter_time = cur_iter_time
 
         # Autoresume
         if args.adlr_autoresume and \

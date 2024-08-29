@@ -70,7 +70,7 @@ def run_and_log_megatron(megatron_cmd_args, log_file_path, log_file_dir, distrib
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--logdir', type=str, default='/workspace/Megatron-LM/trainlog')
+    parser.add_argument('--logdir', type=str, default='/workspace/Megatron-failslow/trainlog')
     parser.add_argument('--iter', type=int, default=10000)
     parser.add_argument('--tp', type=int, default=2)
     parser.add_argument('--pp', type=int, default=2)
@@ -83,7 +83,7 @@ def get_args():
 
 
 def main():
-    os.chdir('/workspace/Megatron-LM/')
+    os.chdir('/workspace/Megatron-failslow/')
     args = get_args()
     log_file_dir, iter_1000 = args.logdir, args.iter
     master = os.getenv("MASTER_ADDR", 'localhost')
@@ -142,7 +142,7 @@ def main():
         nproc_per_node=num_gpus, nnodes=nnodes, node_rank=rank, master_addr=master, master_port=6000
     )
     model_config = ModelConfig(
-        tensor_model_parallel_size=tp, pipeline_model_parallel_size=pp, num_layers=32, #64,
+        tensor_model_parallel_size=tp, pipeline_model_parallel_size=pp, num_layers=64, #64,
         hidden_size=hsize, num_attention_heads=32, seq_length=32, max_position_embeddings=1024, micro_batch_size=4,
         global_batch_size=64, lr=0.00015, train_iters=int(iter_1000), lr_decay_iters=int(0.64*iter_1000), lr_decay_style='cosine',
         min_lr=1.0e-5, weight_decay=0.01, lr_warmup_fraction='.01', clip_grad=1.0, fp16=True, failslow_aware=True
