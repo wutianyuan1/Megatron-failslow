@@ -28,7 +28,7 @@ class DistributedConfig(BaseConfig):
 class DatasetConfig(BaseConfig):
     vocab_file: str
     merge_file: str
-    data_path: str
+    # data_path: str
     split: str
     mock_data: bool
 
