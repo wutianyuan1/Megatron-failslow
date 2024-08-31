@@ -3,8 +3,12 @@
 
 import os
 import torch
+import time
+import redis
 from functools import partial
 from typing import Union
+
+import torch.distributed
 from megatron import get_args
 from megatron import print_rank_0
 from megatron import get_timers
@@ -26,6 +30,33 @@ from megatron.utils import (
 from megatron.arguments import core_transformer_config_from_args
 from megatron.yaml_arguments import core_transformer_config_from_yaml
 from megatron.core.models.gpt.gpt_layer_specs import get_gpt_layer_with_transformer_engine_spec
+
+
+class ClientWrapper(object):
+    def __init__(self):
+        self.client = redis.StrictRedis(os.environ['MASTER_ADDR'], port=6379, db=0)
+        self.count = 0
+        self.check_interval = 20
+        self.delay_time = 0
+        self.rank = None
+
+    def check(self):
+        if self.count % self.check_interval == 0:
+            # only get rank once and cache it
+            if self.rank is None:
+                self.rank = torch.distributed.get_rank()
+            # check delay info
+            delay_time = self.client.get(f"delay_time_{self.rank}")
+            if delay_time is not None:
+                delay_time = float(delay_time.decode())
+                print(f"[ClientWrapper]: set delay time to {delay_time}")
+                self.delay_time = delay_time
+
+    def model_hook(self, *args):
+        self.count += 1
+        self.check()
+        if self.delay_time != 0:
+            time.sleep(self.delay_time)
 
 
 def model_provider(pre_process=True, post_process=True) -> Union[GPTModel, megatron.model.GPTModel]:
@@ -80,6 +111,11 @@ def model_provider(pre_process=True, post_process=True) -> Union[GPTModel, megat
             post_process=post_process
         )
 
+    client_wrapper = ClientWrapper()
+    model.register_forward_hook(
+        client_wrapper.model_hook,
+        prepend=True
+    )
     return model
 
 

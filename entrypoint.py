@@ -4,11 +4,11 @@ import subprocess
 import time
 
 
-MASTER_ADDR = '10.22.4.147'
-nnodes = 8
+MASTER_ADDR = '10.22.4.148'
+nnodes = 4
 
 os.chdir("/workspace/Megatron-failslow")
-cmd = "MASTER_ADDR={} WORLD_SIZE={} RANK={} python run_training.py --tp 1 --pp 4 --probe 0 --hsize 3072"
+cmd = "MASTER_ADDR={} WORLD_SIZE={} RANK={} python run_training.py --tp 1 --pp 1 --probe 0 --hsize 2048"
 cmd = cmd.format(MASTER_ADDR, nnodes, int(sys.argv[1]))
 train_proc = subprocess.Popen(cmd, shell=True)
 
