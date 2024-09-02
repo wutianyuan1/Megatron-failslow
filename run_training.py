@@ -45,14 +45,16 @@ def run_and_log_megatron(megatron_cmd_args, log_file_path, log_file_dir, distrib
     while True:
         try:
             time.sleep(1)
+            ii += 1
             ctl_signal = redis_cli.get("terminate_ctl")
-            print(f"ctl_signal: {ctl_signal}")
+            if ii % 20 == 0:
+                print(f"Rank {os.getenv('RANK', '0')}: ctl_signal={ctl_signal}")
             if ctl_signal is not None:
                 ctl_signal = ctl_signal.decode()
-                if ctl_signal == '123':
+                if ctl_signal == '123' or ctl_signal == '321':
                     print("######### partial restart: PP adjusted #########")
                     if int(os.getenv("RANK", '0')) == 0:
-                        redis_cli.set("terminate", 1)
+                        redis_cli.set("terminate", 1 if ctl_signal == '123' else 2)
                         print("RANK 0: delete old keys in redis")
                     process.wait()
                     if int(os.getenv("RANK", '0')) == 0:

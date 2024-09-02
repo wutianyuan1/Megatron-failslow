@@ -12,3 +12,4 @@ logs
 *.whl
 trainlog
 usefullog
+*.tar

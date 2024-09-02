@@ -1090,6 +1090,16 @@ def train(forward_step_func, model, optimizer, opt_param_scheduler,
                 exit = True
                 sys.exit()
                 break
+            if control_term_signal == '2':
+                logging.critical("[Training paused] receives terminate signal from redis, pause & restart now...")
+                save_checkpoint_and_time(iteration, model, optimizer,
+                                         opt_param_scheduler,
+                                         num_floating_point_operations_so_far,
+                                         to_mem=False)
+                print_datetime('exiting program after receiving Redis-Pause.')
+                exit = True
+                sys.exit()
+                break
 
         if args.save and args.save_interval and \
            iteration % args.save_interval == 0:

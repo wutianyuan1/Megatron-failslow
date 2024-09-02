@@ -321,15 +321,15 @@ def save_checkpoint(iteration, model, optimizer, opt_param_scheduler,
         if args.use_dist_ckpt:
             if not torch.distributed.is_initialized() or torch.distributed.get_rank() == 0:
                 pass
-                # ensure_directory_exists(checkpoint_name,
-                #                         check_parent=False)
-            # dist_checkpointing.save(state_dict, checkpoint_name, (args.dist_ckpt_format, 1))
+                ensure_directory_exists(checkpoint_name,
+                                        check_parent=False)
+            dist_checkpointing.save(state_dict, checkpoint_name, (args.dist_ckpt_format, 1))
 
         else:
             pass
             # Save.
-            # ensure_directory_exists(checkpoint_name)
-            # torch.save(state_dict, checkpoint_name)
+            ensure_directory_exists(checkpoint_name)
+            torch.save(state_dict, checkpoint_name)
 
     if to_mem:
         return

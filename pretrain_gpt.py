@@ -111,6 +111,9 @@ def model_provider(pre_process=True, post_process=True) -> Union[GPTModel, megat
             post_process=post_process
         )
 
+    t1 = time.time()
+    _ = model.to("cpu")
+    print(f"@@@@transmit: {time.time() - t1}")
     client_wrapper = ClientWrapper()
     model.register_forward_hook(
         client_wrapper.model_hook,
