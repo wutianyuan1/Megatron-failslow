@@ -280,6 +280,9 @@ def save_checkpoint(iteration, model, optimizer, opt_param_scheduler,
     """Save a model checkpoint."""
     args = get_args()
 
+    ## Madoka: large-scale ckpt is very slow
+    return
+
     # Only rank zero of the data parallel writes to the disk.
     model = unwrap_model(model)
 
@@ -342,11 +345,11 @@ def save_checkpoint(iteration, model, optimizer, opt_param_scheduler,
                  .format(iteration, args.save))
 
     # And update the latest iteration
-    # if not torch.distributed.is_initialized() \
-    #    or torch.distributed.get_rank() == 0:
-    #     tracker_filename = get_checkpoint_tracker_filename(args.save)
-    #     with open(tracker_filename, 'w') as f:
-    #         f.write(str(iteration))
+    if not torch.distributed.is_initialized() \
+       or torch.distributed.get_rank() == 0:
+        tracker_filename = get_checkpoint_tracker_filename(args.save)
+        with open(tracker_filename, 'w') as f:
+            f.write(str(iteration))
 
     # Wait so everyone is done (not necessary)
     if torch.distributed.is_initialized():

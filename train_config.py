@@ -53,6 +53,7 @@ class ModelConfig(BaseConfig):
     lr_warmup_fraction: str
     clip_grad: float
     fp16: bool
+    loss_scale: float
     failslow_aware: bool
 
 

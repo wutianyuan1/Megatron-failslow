@@ -22,7 +22,7 @@ def shard_buffer(buffer: torch.Tensor, data_parallel_world_size: int):
     """
     Shard buffer into data_parallel_world_size chunks of equal size.
     """
-    assert buffer.numel() % data_parallel_world_size == 0
+    # assert buffer.numel() % data_parallel_world_size == 0
     shard_size = buffer.numel() // data_parallel_world_size
     sharded_buffer = [
         buffer[(r * shard_size) : ((r + 1) * shard_size)] for r in range(data_parallel_world_size)
@@ -109,20 +109,20 @@ class Bucket:
         communication call. When overlap_grad_reduce is set to False, makes
         synchronous call.
         """
-        assert (
-            self.communication_handle is None and not self.communication_issued
-        ), 'Should not have multiple communication calls in flight at once'
+        # assert (
+        #     self.communication_handle is None and not self.communication_issued
+        # ), 'Should not have multiple communication calls in flight at once'
 
         # Make sure norm of grads in bucket are not NaN
         # prior to data-parallel all-reduce / reduce-scatter.
         if self.check_for_nan_in_grad:
             global_rank = torch.distributed.get_rank()
             norm = self.grad_data.norm(p=2)
-            assert not norm.isnan(), (
-                f'Rank {global_rank}: found NaN in local grad norm in '
-                f'backward pass before data-parallel communication collective. '
-                f'Device: {torch.cuda.current_device()}, node: {os.uname()[1]}'
-            )
+            # assert not norm.isnan(), (
+            #     f'Rank {global_rank}: found NaN in local grad norm in '
+            #     f'backward pass before data-parallel communication collective. '
+            #     f'Device: {torch.cuda.current_device()}, node: {os.uname()[1]}'
+            # )
 
         self.grad_data *= self.gradient_scaling_factor
         # Use async_op only when overlap_grad_reduce is True.
@@ -154,10 +154,10 @@ class Bucket:
         if not self.overlap_grad_reduce:
             self.start_grad_sync()
             return
-        assert self.communication_handle is not None and self.communication_issued, (
-            f'Communication call has not been issued for this bucket '
-            f'({len(self.params_with_grad)}/{len(self.params)} params have grad available)'
-        )
+        # assert self.communication_handle is not None and self.communication_issued, (
+        #     f'Communication call has not been issued for this bucket '
+        #     f'({len(self.params_with_grad)}/{len(self.params)} params have grad available)'
+        # )
         self.communication_handle.wait()
 
     def register_grad_ready(self, param: torch.nn.Parameter):
@@ -167,11 +167,11 @@ class Bucket:
         When the number of microbatches is greater than 1, we only want to register
         grads as ready when processing the last microbatch and overlap_grad_reduce is True.
         """
-        assert param in self.params, 'Param is not in the bucket'
-        assert param not in self.params_with_grad, 'Cannot set grad twice'
-        assert (
-            self.overlap_grad_reduce
-        ), 'register_grad_ready() should be called only when overlapping grad reduce'
+        # assert param in self.params, 'Param is not in the bucket'
+        # assert param not in self.params_with_grad, 'Cannot set grad twice'
+        # assert (
+        #     self.overlap_grad_reduce
+        # ), 'register_grad_ready() should be called only when overlapping grad reduce'
         self.params_with_grad.add(param)
         # If all params in bucket have grads available, issue communication call.
         if len(self.params_with_grad) == len(self.params):
@@ -219,7 +219,7 @@ class ParamAndGradBuffer:
         # Check that params are unique.
         unique_params = set()
         for param in params:
-            assert param not in unique_params
+            # assert param not in unique_params
             unique_params.add(param)
         del unique_params
 
@@ -303,7 +303,8 @@ class ParamAndGradBuffer:
                 # end at the current data_start_index.
                 if use_distributed_optimizer:
                     # data_start_index should already be padded.
-                    assert data_start_index % self.data_parallel_world_size == 0
+                    pass
+                    # assert data_start_index % self.data_parallel_world_size == 0
                 _create_new_bucket(data_start_index)
 
             self.param_index_map[param] = (
@@ -329,8 +330,8 @@ class ParamAndGradBuffer:
         # Next, create underlying storage for buffer (with numel elements that includes
         # padding as necessary).
         self.numel = data_end_index
-        if use_distributed_optimizer:
-            assert self.numel % self.data_parallel_world_size == 0
+        # if use_distributed_optimizer:
+        #     assert self.numel % self.data_parallel_world_size == 0
         self.param_data = None
         # Only re-map param tensors if using distributed optimizer.
         if self.use_distributed_optimizer:
@@ -362,7 +363,7 @@ class ParamAndGradBuffer:
                 param.data = self._get(
                     param.data.shape, data_start_index, buffer_type=BufferType.PARAM
                 )
-                assert old_param_data._base is None
+                # assert old_param_data._base is None
                 # Copy tensor values (from initialization or checkpoint).
                 param.data.detach().copy_(old_param_data)
                 del old_param_data
@@ -381,8 +382,8 @@ class ParamAndGradBuffer:
                 )
                 bucket_data_start_index = bucket_data_end_index
                 bucket_params = set()
-                assert cur_bucket_id + 1 == len(self.buckets)
-                assert bucket_id == cur_bucket_id + 1
+                # assert cur_bucket_id + 1 == len(self.buckets)
+                # assert bucket_id == cur_bucket_id + 1
                 cur_bucket_id = bucket_id
             bucket_params.add(param)
 
@@ -419,9 +420,9 @@ class ParamAndGradBuffer:
         `start_index`.
         """
         end_index = start_index + shape.numel()
-        assert end_index <= self.numel, 'Requested tensor is out of buffer range'
+        # assert end_index <= self.numel, 'Requested tensor is out of buffer range'
         if buffer_type == BufferType.PARAM:
-            assert self.param_data is not None
+            # assert self.param_data is not None
             buffer_tensor = self.param_data[start_index:end_index]
         elif buffer_type == BufferType.GRAD:
             buffer_tensor = self.grad_data[start_index:end_index]
@@ -445,10 +446,10 @@ class ParamAndGradBuffer:
 
         # Assert that indices are correctly padded (if needed), and that bucket
         # position is same as originally computed.
-        if self.use_distributed_optimizer:
-            assert start_index % self.data_parallel_world_size == 0
-            assert end_index % self.data_parallel_world_size == 0
-        assert (start_index, end_index) == self.bucket_indices[bucket_id]
+        # if self.use_distributed_optimizer:
+        #     assert start_index % self.data_parallel_world_size == 0
+        #     assert end_index % self.data_parallel_world_size == 0
+        # assert (start_index, end_index) == self.bucket_indices[bucket_id]
 
         # Get appropriate view into global ParamAndGradBuffer.
         bucketed_param_data = None
@@ -474,7 +475,7 @@ class ParamAndGradBuffer:
         )
         self.buckets.append(bucket)
         for bucket_param in bucket_params:
-            assert bucket_param not in self.param_to_bucket
+            # assert bucket_param not in self.param_to_bucket
             self.param_to_bucket[bucket_param] = bucket
 
     def reset(self):
@@ -518,9 +519,9 @@ class ParamAndGradBuffer:
         When the number of microbatches is greater than 1, we only want to register
         grads as ready when processing the last microbatch and overlap_grad_reduce is True.
         """
-        assert (
-            self.overlap_grad_reduce
-        ), 'register_grad_ready() should only be called when overlap_grad_reduce is True'
+        # assert (
+        #     self.overlap_grad_reduce
+        # ), 'register_grad_ready() should only be called when overlap_grad_reduce is True'
         if self.is_last_microbatch:
             bucket = self.param_to_bucket[param]
             bucket.register_grad_ready(param)

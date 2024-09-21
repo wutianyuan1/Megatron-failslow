@@ -152,8 +152,8 @@ def main():
     model_config = ModelConfig(
         tensor_model_parallel_size=tp, pipeline_model_parallel_size=pp, num_layers=64, #64,
         hidden_size=hsize, num_attention_heads=32, seq_length=32, max_position_embeddings=1024, micro_batch_size=4,
-        global_batch_size=128, lr=0.00015, train_iters=int(iter_1000), lr_decay_iters=int(0.64*iter_1000), lr_decay_style='cosine',
-        min_lr=1.0e-5, weight_decay=0.01, lr_warmup_fraction='.01', clip_grad=1.0, fp16=True, failslow_aware=True
+        global_batch_size=512, lr=0.00015, train_iters=int(iter_1000), lr_decay_iters=int(0.64*iter_1000), lr_decay_style='cosine',
+        min_lr=1.0e-5, weight_decay=0.01, lr_warmup_fraction='.01', clip_grad=1.0, loss_scale=16384, fp16=True, failslow_aware=True
     )
     dataset_config = DatasetConfig(
         vocab_file='/workspace/dataset/gpt2-vocab.json',
